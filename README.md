@@ -1,1 +1,1 @@
-# jaeger_module
+# jaeger-module
