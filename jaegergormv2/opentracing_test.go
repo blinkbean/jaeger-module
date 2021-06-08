@@ -41,13 +41,13 @@ func TestGormOpenTracing(t *testing.T) {
 }
 
 type Jaeger struct {
-	Id        int64  `json:"id"`
-	CoterieId int64  `json:"coterie_id"`
-	Text      string `json:"text"`
+	Id       int64  `json:"id"`
+	JaegerId int64  `json:"jaeger_id"`
+	Text     string `json:"text"`
 }
 
 func (j Jaeger) TableName() string {
-	return "coterie_jaeger"
+	return "jaeger"
 }
 
 var data = []Jaeger{{1, 1, "1"}, {2, 2, "2"}, {3, 3, "3"}}
@@ -72,13 +72,13 @@ func query(db *gorm.DB, assert *assert.Assertions) {
 		var j Jaeger
 		err := db.Model(&Jaeger{}).Where("id = ?", v.Id).First(&j).Error
 		assert.Equal(err, nil, "get err")
-		assert.Equal(v.CoterieId, j.CoterieId, "get data err")
+		assert.Equal(v.JaegerId, j.JaegerId, "get data err")
 	}
 }
 
 func row(db *gorm.DB, assert *assert.Assertions) {
 	for _, v := range data {
-		row := db.Model(&Jaeger{}).Select("coterie_id").Where("id = ?", v.Id).Row()
+		row := db.Model(&Jaeger{}).Select("jaeger_id").Where("id = ?", v.Id).Row()
 		var coterieId int64
 		row.Scan(&coterieId)
 		assert.Equal(coterieId, v.Id, "row err")
@@ -98,9 +98,9 @@ func row(db *gorm.DB, assert *assert.Assertions) {
 
 func raw(db *gorm.DB, assert *assert.Assertions) {
 	var j Jaeger
-	err := db.Raw("select * from coterie_jaeger where id = 1").Scan(&j).Error
+	err := db.Raw("select * from jaeger where id = 1").Scan(&j).Error
 	assert.Equal(err, nil, "raw get err")
-	assert.Equal(j.CoterieId, int64(1), "get raw data err")
+	assert.Equal(j.JaegerId, int64(1), "get raw data err")
 }
 
 func delete(db *gorm.DB, assert *assert.Assertions) {
