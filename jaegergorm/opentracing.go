@@ -7,12 +7,22 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
+	"github.com/pkg/errors"
 )
 
 var (
 	opentracingSpanKey    = "opentracing:span"
 	opentracingContextKey = "opentracing:context"
 )
+
+func Open(dialect string, args ...interface{}) (*gorm.DB, error) {
+	db, err := gorm.Open(dialect, args...)
+	if err != nil {
+		return nil, errors.WithStack(err)
+	}
+	registerCallbacks(db)
+	return db, nil
+}
 
 func WithContext(ctx context.Context, db *gorm.DB) *gorm.DB {
 	return db.Set(opentracingContextKey, ctx)
