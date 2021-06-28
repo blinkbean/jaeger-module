@@ -33,7 +33,7 @@ go get -u github.com/blinkbean/jaeger-model
 var db *gorm.DB
 
 // 初始化只执行一次
-func initDB() *gorm.DB{
+func InitDB() *gorm.DB {
   // dbType: mysql、postgres、sqlite3
   db, err := jaegergorm.Open(dbType, dataSource)
   if err != nil {
@@ -49,6 +49,7 @@ func DatabaseConn(ctx context.context) (*gorm.DB, err) {
 }
 
 func DoSomeThingWithDB(ctx context.Context) {
+  // 绑定context
   o, err := DatabaseConn(ctx)
   	if err != nil {
 		// log
@@ -65,10 +66,47 @@ func DoSomeThingWithDB(ctx context.Context) {
 }
 ```
 
-![gorm.jpg](../Image/xpAQnbNolP83aBM.jpg)
+![gorm.jpg](https://i.loli.net/2021/06/25/xpAQnbNolP83aBM.jpg)
 
 
 
+#### Redis
+
+初始化的时候调用jaegerredis.Wrap方法包装redisClient对象，之后对调用方基本透明
+
+```go
+var redisClient jaegerredis.Client
+
+func newRedisClient() jaegerredis.Client {
+  clusterOptions := &redis.ClusterOptions{
+    // do something
+  }
+  clusterClient := redis.NewClusterClient(clusterOptions)
+  return jaegerredis.Wrap(clusterClient)
+}
+
+
+func InitRedis() {
+  redisClient = newRedisClient()
+}
+
+func DoSomethingWithRedis(ctx context.Context) {
+  key := "KH:CSR:C:TAG:{SID:26828551:T:5:S:2"
+  // 执行redis命令前绑定context
+  result, err := redisClient.WithContext(ctx).HGetAll(key).Result()
+  if err != nil {
+    if err != redis.Nil {
+      // log error
+      return
+    }
+  }
+  fmt.Println(result)
+  return
+}
+
+```
+
+![redis.jpg](https://i.loli.net/2021/06/28/BztkNbL8PQrqvXF.jpg)
 
 
 #### Test 功能测试
