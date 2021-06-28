@@ -106,7 +106,7 @@ func DoSomethingWithRedis(ctx context.Context) {
 
 ```
 
-![redis.jpg](https://i.loli.net/2021/06/28/BztkNbL8PQrqvXF.jpg)
+![redis.jpg](https://i.loli.net/2021/06/28/ilJ1aZDCc8kgKyH.jpg)
 
 
 #### Test 功能测试
